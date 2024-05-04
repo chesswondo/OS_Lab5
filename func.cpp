@@ -1,5 +1,3 @@
-// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <thread>
@@ -9,12 +7,13 @@
 
 using namespace std;
 
+// Function f
 int f(int x)
 {
     this_thread::sleep_for(28s);
     return 421;
 }
-
+// Function g
 int g(int x)
 {
     this_thread::sleep_for(3s);
@@ -28,6 +27,7 @@ int main(int argc, char * argv[])
         cerr << "Usage: funt port f|g\n";
         return 1;
     }
+    // Command-line options
     unsigned short int port = (unsigned short int)atoi(argv[1]);
     int (*func)(int) = (argv[2][0] == 'f') ? f : g;
 
@@ -38,11 +38,11 @@ int main(int argc, char * argv[])
         if (WSAStartup(wVersionRequested, &wsaData) != 0)
             throw runtime_error("WSAStartup");
 
-        // Создание сокета
+        // Socket creation
         ms = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (ms == INVALID_SOCKET) throw runtime_error("socket creation");
 
-        // Приклепление к порту
+        // bind to port 
         sockaddr_in name;
         memset(&name, 0, sizeof(name));
         name.sin_addr.s_addr = INADDR_ANY;
@@ -53,18 +53,20 @@ int main(int argc, char * argv[])
 
         if (listen(ms, 1) != 0) throw runtime_error("listen");
 
-        // Ожидание соединения
+        // Wait for connect
         cs = accept(ms, NULL, NULL);
         if (cs == INVALID_SOCKET) throw runtime_error("accept");
 
-        // Начинается работа
+        // Receive x and ...
         int x;
         int rc = recv(cs, (char*)&x, sizeof(x), 0);
         if (rc < 0) throw runtime_error("recv data");
         if (rc == 0) throw runtime_error("connection closed");;
 
+        // ...caclulation...
         rc = func(x);
 
+        // ...and send answer
         rc = send(cs, (char*)&rc, sizeof(rc), 0);
         if (rc != sizeof(rc)) throw("send data");
 
